@@ -7,6 +7,7 @@ const ACCESS_KEY = '2ZkUE3AQkR9S2T69Egey_tRLEoQ3iagJ0epRSvug3Yw'; // Replace wit
 
 const App = () => {
 	const [images, setImages] = useState([]);
+  const [currentValue, setCurrentValue] = useState({url: '', alt_description: ''});
 	const [sdk, setSdk] = useState(null);
 
 	console.log('sdk', sdk);
@@ -21,14 +22,12 @@ const App = () => {
 			.catch((error) => console.log(error));
 	}, []);
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	const setCurrentValue = async () => {
+	const setSelectedImage = async ({urls, alt_description }) => {
 		try {
-			const savedValue = await sdk.field.getValue();
-			console.log('savedValue', savedValue);
-			if (typeof savedValue !== 'undefined') {
-				// this.selectItem(savedValue);
-			}
+			 await sdk.field.setValue({ "url": urls.full, "alt_description": alt_description })
+       setCurrentValue({ url: urls.full, alt_description: alt_description });
+       const image = await sdk.field.getValue();
+       console.log('setSelectedImage', image)
 		} catch (err) {
 			console.log(err);
 		}
@@ -36,9 +35,14 @@ const App = () => {
 
 	useEffect(() => {
 		async function initialize() {
-			console.log('initialize');
 			const sdk = await init();
       console.log('useEffect - sdk', sdk)
+      const savedValue = await sdk.field.getValue();
+      if(typeof savedValue !== "undefined" && savedValue.url !== "") {
+        setCurrentValue(savedValue);
+      }
+			console.log('savedValue', savedValue);
+
 			setSdk(sdk);
 
 			// setCurrentValue();
@@ -46,21 +50,52 @@ const App = () => {
 
 		initialize();
 		// eslint-disable-next-line no-use-before-define
-	}, [setCurrentValue]);
+	}, []);
+
+    const handleImageClick = (image) => {
+			console.log(`Image clicked: ${image.alt_description || 'No description'}`);
+			console.log(`Image URL: ${image.urls.full}`);
+    
+      setSelectedImage(image)
+		};
+
+     const handleShowAllImages = () => {
+				setCurrentValue({ url: '', alt_description: '' });
+			};
+
+      console.log('currentValue', currentValue)
 
 	return (
 		<div>
 			<h1>Unsplash Images</h1>
+			{currentValue.url !== undefined && (
+				<button onClick={handleShowAllImages} style={{ marginBottom: '20px' }}>
+					Show All Images
+				</button>
+			)}
 			<div style={{ display: 'flex', flexWrap: 'wrap' }}>
-				{images.map((image) => (
-					<div key={image.id} style={{ margin: '10px' }}>
+				{currentValue.url ? (
+					<div style={{ margin: '10px' }}>
+						<div>{currentValue.alt_description}</div>
 						<img
-							src={image.urls.small}
-							alt={image.description || 'Image from Unsplash'}
+							src={currentValue.url}
+							alt={currentValue.alt_description || 'Selected Image'}
 							style={{ width: '200px', height: '200px', objectFit: 'cover' }}
 						/>
 					</div>
-				))}
+				) : (
+					images.map((image) => (
+						<div key={image.id} style={{ margin: '10px' }}>
+							<div>{currentValue.alt_description}</div>
+							<img
+								src={image.urls.small}
+								alt={image.description || 'Image from Unsplash'}
+								style={{ width: '200px', height: '200px', objectFit: 'cover' }}
+								onClick={() => handleImageClick(image)}
+							/>
+						</div>
+					))
+				)}
 			</div>
 		</div>
 	);
