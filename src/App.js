@@ -7,28 +7,45 @@ const ACCESS_KEY = '2ZkUE3AQkR9S2T69Egey_tRLEoQ3iagJ0epRSvug3Yw'; // Replace wit
 
 const App = () => {
 	const [images, setImages] = useState([]);
-  const [sdk, setSdk] = useState(null);
+	const [sdk, setSdk] = useState(null);
 
-  console.log('sdk', sdk);
+	console.log('sdk', sdk);
 
 	useEffect(() => {
 		axios
 			.get(`${UNSPLASH_API_URL}?client_id=${ACCESS_KEY}`)
 			.then((response) => {
+				console.log(response.data);
 				setImages(response.data);
 			})
 			.catch((error) => console.log(error));
 	}, []);
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	const setCurrentValue = async () => {
+		try {
+			const savedValue = await sdk.field.getValue();
+			console.log('savedValue', savedValue);
+			if (typeof savedValue !== 'undefined') {
+				// this.selectItem(savedValue);
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	useEffect(() => {
 		async function initialize() {
-      console.log('initialize');
+			console.log('initialize');
 			const sdk = await init();
-      setSdk(sdk);
+			setSdk(sdk);
+
+			setCurrentValue();
 		}
 
 		initialize();
-	}, []);
+		// eslint-disable-next-line no-use-before-define
+	}, [setCurrentValue]);
 
 	return (
 		<div>
