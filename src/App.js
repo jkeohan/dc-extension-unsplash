@@ -15,7 +15,7 @@ const App = () => {
 		axios
 			.get(`${UNSPLASH_API_URL}?client_id=${ACCESS_KEY}`)
 			.then((response) => {
-				console.log(response.data);
+				console.log("response", response.data);
 				setImages(response.data);
 			})
 			.catch((error) => console.log(error));
@@ -38,9 +38,10 @@ const App = () => {
 		async function initialize() {
 			console.log('initialize');
 			const sdk = await init();
+      console.log('useEffect - sdk', sdk)
 			setSdk(sdk);
 
-			setCurrentValue();
+			// setCurrentValue();
 		}
 
 		initialize();
