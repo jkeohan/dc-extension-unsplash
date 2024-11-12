@@ -22,6 +22,7 @@ const App = () => {
 		async function initializeSdk() {
 			try {
 				const sdkInstance = await init();
+        console.log('SDK initialized:', sdkInstance);
 				const savedValue = await sdkInstance.field.getValue();
 				if (savedValue?.url) setCurrentValue(savedValue);
 
