@@ -1,71 +1,53 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { init } from 'dc-extensions-sdk';
+import React, { useEffect, useState } from 'react';
+import { useSdk } from './useSdk';
 import axios from 'axios';
 import './App.css';
 
 const UNSPLASH_API_URL = 'https://api.unsplash.com/photos/';
 const UNSPLASH_SEARCH_API_URL = 'https://api.unsplash.com/search/photos';
-const DEFAULT_ACCESS_KEY = '2ZkUE3AQkR9S2T69Egey_tRLEoQ3iagJ0epRSvug3Yw'; // Replace with your access key
 
 const App = () => {
+	const {sdk, url, alt_description, apiKey} = useSdk(null);
 	const [images, setImages] = useState([]);
-	const [currentValue, setCurrentValue] = useState({
-		url: '',
-		alt_description: ' A land rover is parked on the side of the road',
-	});
-	const [sdk, setSdk] = useState(null);
+	const [currentValue, setCurrentValue] = useState(null);
 	const [query, setQuery] = useState('');
 	const [isSearchActive, setIsSearchActive] = useState(false);
-	const [accessKey, setAccessKey] = useState(DEFAULT_ACCESS_KEY);
 
-	useEffect(() => {
-		async function initializeSdk() {
-			try {
-				const sdkInstance = await init();
-        console.log('SDK initialized:', sdkInstance);
-				const savedValue = await sdkInstance.field.getValue();
-				if (savedValue?.url) setCurrentValue(savedValue);
+  useEffect(() => {
+    if(sdk && url) {
+      setCurrentValue({ url, alt_description });
+    }
+     },[alt_description, sdk, url])
 
-				const sdkAccessKey = sdkInstance.params.installation?.api_key;
-				setAccessKey(sdkAccessKey || DEFAULT_ACCESS_KEY);
-				setSdk(sdkInstance);
-			} catch (error) {
-				console.error('SDK initialization failed:', error);
-			}
+	const fetchImages = async (url, searchQuery = '') => {
+    console.log('fetchImages - apiKey', apiKey)
+		try {
+			const response = await axios.get(url, {
+				params: {
+					client_id: apiKey,
+					query: searchQuery,
+					per_page: 10,
+				},
+			});
+			setImages(searchQuery ? response.data.results : response.data);
+			setIsSearchActive(!!searchQuery);
+		} catch (error) {
+			console.error('Error fetching images:', error);
 		}
-
-		initializeSdk();
-	}, []);
-
-	const fetchImages = useCallback(
-		async (url, searchQuery = '') => {
-			try {
-				const response = await axios.get(url, {
-					params: {
-						client_id: accessKey,
-						query: searchQuery,
-						per_page: 10,
-					},
-				});
-				setImages(searchQuery ? response.data.results : response.data);
-				setIsSearchActive(!!searchQuery);
-			} catch (error) {
-				console.error('Error fetching images:', error);
-			}
-		},
-		[accessKey]
-	);
+	};
 
 	useEffect(() => {
-		if (!accessKey) return;
+    console.log('useEffect - apiKey', apiKey);
+		if (!apiKey) return;
 		fetchImages(UNSPLASH_API_URL);
-	}, [accessKey, fetchImages]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [apiKey]);
 
 	const setSelectedImage = async ({ urls, alt_description }) => {
 		console.log('setSelectedImage', urls, alt_description);
 		try {
 			await sdk.field.setValue({ url: urls.full, alt_description });
-			setCurrentValue({ url: urls.full, alt_description });
+      setCurrentValue({ url: urls.full, alt_description });
 			setIsSearchActive(false);
 		} catch (err) {
 			console.log(err);
@@ -80,6 +62,7 @@ const App = () => {
 	const handleShowAllImages = () => {
 		setCurrentValue({ url: '', alt_description: '' });
 		setIsSearchActive(false);
+    setQuery('');
 		fetchImages(UNSPLASH_API_URL);
 	};
 
@@ -104,33 +87,35 @@ const App = () => {
 				</form>
 
 				{/* Show All Button */}
-				{currentValue.url && (
+				{currentValue && currentValue.url && (
 					<button
 						className='ampx-button ampx-button__primary'
-						onClick={handleShowAllImages}
-						style={{ margin: '20px 0px' }}>
+						onClick={handleShowAllImages}>
 						Show All Images
 					</button>
 				)}
 			</header>
+      
 			<div className='image-container'>
-				{currentValue.url && !isSearchActive ? (
+				{currentValue && currentValue.url && !isSearchActive ? (
+          // Currently Selected Image 
 					<div className='image-item'>
 						<div>{currentValue.alt_description}</div>
 						<img
 							src={currentValue.url}
-							alt={currentValue.alt_description || 'Selected Image'}
-							style={{ width: '200px', height: '200px', objectFit: 'cover' }}
+							alt={
+								currentValue.alt_description || 'no alt description available'
+							}
 						/>
 					</div>
 				) : (
+          // All Images
 					images.map((image) => (
 						<div className='image-item' key={image.id}>
-							<div>{currentValue.alt_description}</div>
+							<div>{image.alt_description}</div>
 							<img
 								src={image.urls.small}
 								alt={image.description || 'Image from Unsplash'}
-								style={{ width: '200px', height: '200px', objectFit: 'cover' }}
 								onClick={() => setSelectedImage(image)}
 							/>
 						</div>
