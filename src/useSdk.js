@@ -6,10 +6,8 @@ export const useSdk = () => {
 	useEffect(() => {
 		(async () => {
 			const s = await init();
-			console.log('after await init()');
 			s.frame.startAutoResizer();
 			const values = await s.field.getValue();
-			console.log('values', values);
 			const apiKey = s.params.installation?.api_key;
 			const payload = {
 				sdk: s,
