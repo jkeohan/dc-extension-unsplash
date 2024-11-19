@@ -7,20 +7,20 @@ const UNSPLASH_API_URL = 'https://api.unsplash.com/photos/';
 const UNSPLASH_SEARCH_API_URL = 'https://api.unsplash.com/search/photos';
 
 const App = () => {
-	const {sdk, url, alt_description, apiKey} = useSdk(null);
+	const { sdk, url, alt_description, apiKey } = useSdk(null);
 	const [images, setImages] = useState([]);
 	const [currentValue, setCurrentValue] = useState(null);
 	const [query, setQuery] = useState('');
 	const [isSearchActive, setIsSearchActive] = useState(false);
 
-  useEffect(() => {
-    if(sdk && url) {
-      setCurrentValue({ url, alt_description });
-    }
-     },[alt_description, sdk, url])
+	useEffect(() => {
+		if (sdk && url) {
+			setCurrentValue({ url, alt_description });
+		}
+	}, [alt_description, sdk, url]);
 
 	const fetchImages = async (url, searchQuery = '') => {
-    console.log('fetchImages - apiKey', apiKey)
+		console.log('fetchImages - apiKey', apiKey);
 		try {
 			const response = await axios.get(url, {
 				params: {
@@ -37,17 +37,17 @@ const App = () => {
 	};
 
 	useEffect(() => {
-    console.log('useEffect - apiKey', apiKey);
+		console.log('useEffect - apiKey', apiKey);
 		if (!apiKey) return;
 		fetchImages(UNSPLASH_API_URL);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [apiKey]);
 
 	const setSelectedImage = async ({ urls, alt_description }) => {
 		console.log('setSelectedImage', urls, alt_description);
 		try {
 			await sdk.field.setValue({ url: urls.full, alt_description });
-      setCurrentValue({ url: urls.full, alt_description });
+			setCurrentValue({ url: urls.full, alt_description });
 			setIsSearchActive(false);
 		} catch (err) {
 			console.log(err);
@@ -62,7 +62,7 @@ const App = () => {
 	const handleShowAllImages = () => {
 		setCurrentValue({ url: '', alt_description: '' });
 		setIsSearchActive(false);
-    setQuery('');
+		setQuery('');
 		fetchImages(UNSPLASH_API_URL);
 	};
 
@@ -95,10 +95,10 @@ const App = () => {
 					</button>
 				)}
 			</header>
-      
+
 			<div className='image-container'>
 				{currentValue && currentValue.url && !isSearchActive ? (
-          // Currently Selected Image 
+					// Render Currently Selected Image
 					<div className='image-item'>
 						<div>{currentValue.alt_description}</div>
 						<img
@@ -109,7 +109,7 @@ const App = () => {
 						/>
 					</div>
 				) : (
-          // All Images
+					// Render All Images
 					images.map((image) => (
 						<div className='image-item' key={image.id}>
 							<div>{image.alt_description}</div>
