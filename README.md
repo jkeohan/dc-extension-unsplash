@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# dc-extension-unsplash-demo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The app makes use of the [dc-extensions-sdk](https://github.com/amplience/dc-extensions-sdk) which enables the creation of Extensions for Dynamic Content. Extensions are custom form controls that can be used in the content editing form in the Dynamic Content App.
 
-## Available Scripts
+This extension is a simple React app that leverages the [Unsplash API](https://unsplash.com/documentation#getting-started) to render images within an Amplience Content Item.  The user then has the ability to select an image and save its corresponding url and alt text values.  
 
-In the project directory, you can run:
+A search input field is provided which allows the user to search images using specific keywords. 
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+* Retrieves a set of images from Unsplash API
+* Allows user to select an image and save its corresponding url and alt text values
+* Allows the user to search for images based on keywords
+* Updates url and alt text values when a new image has been saved
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Deployment
 
-### `npm test`
+After you fork the project you must deploy the app to a hosting provider such as Netlify, Vercel, ect.  Keep in mind that the app performs only as expected only when used within the context of an Amplience extension and requires a valid Unsplash API Key. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+# Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Once the app has been deployed you will perform the following:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Create a and configure a new extension
+2. Create a Content Type that uses the extension
+3. Create a Content Item based on this Content Type.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Register and use the extension
 
-### `npm run eject`
+Review the [official documentation for registering a new extension](https://amplience.com/developers/docs/integrations/extensions/register-use/)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Required Persmissions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Assign the following permissions:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
