@@ -20,7 +20,6 @@ const App = () => {
 	}, [alt_description, sdk, url]);
 
 	const fetchImages = async (url, searchQuery = '') => {
-		console.log('fetchImages - apiKey', apiKey);
 		try {
 			const response = await axios.get(url, {
 				params: {
@@ -37,18 +36,17 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		console.log('useEffect - apiKey', apiKey);
 		if (!apiKey) return;
 		fetchImages(UNSPLASH_API_URL);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [apiKey]);
 
 	const setSelectedImage = async ({ urls, alt_description }) => {
-		console.log('setSelectedImage', urls, alt_description);
 		try {
 			await sdk.field.setValue({ url: urls.full, alt_description });
 			setCurrentValue({ url: urls.full, alt_description });
 			setIsSearchActive(false);
+			// Focus the selected image
+			document.getElementById('selected-image').focus();
 		} catch (err) {
 			console.log(err);
 		}
@@ -66,62 +64,77 @@ const App = () => {
 		fetchImages(UNSPLASH_API_URL);
 	};
 
-	console.log('currentValue', currentValue);
-
 	return (
 		<div className='App'>
 			<header>
 				<h1>Unsplash Images</h1>
-				{/* Search Form */}
-				<form onSubmit={handleSearch}>
+				<form onSubmit={handleSearch} aria-label='Search Unsplash Images'>
 					<input
+						id='search-input'
+						aria-label='Search Unsplash Images'
 						type='text'
 						placeholder='Search for images...'
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
-						style={{ marginRight: '10px', padding: '8px' }}
 					/>
-					<button className='ampx-button ampx-button__primary' type='submit'>
+					<button
+						className='ampx-button ampx-button__primary'
+						type='submit'
+						aria-label='Search'>
 						Search
 					</button>
 				</form>
 
-				{/* Show All Button */}
 				{currentValue && currentValue.url && (
 					<button
 						className='ampx-button ampx-button__primary'
-						onClick={handleShowAllImages}>
+						onClick={handleShowAllImages}
+						aria-label='Show all images'>
 						Show All Images
 					</button>
 				)}
 			</header>
 
-			<div className='image-container'>
-				{currentValue && currentValue.url && !isSearchActive ? (
-					// Render Currently Selected Image
-					<div className='image-item'>
-						<div>{currentValue.alt_description}</div>
-						<img
-							src={currentValue.url}
-							alt={
-								currentValue.alt_description || 'no alt description available'
-							}
-						/>
-					</div>
-				) : (
-					// Render All Images
-					images.map((image) => (
-						<div className='image-item' key={image.id}>
-							<div>{image.alt_description}</div>
+			<main>
+				<div
+					className='image-container'
+					role='region'
+					aria-label='Image Gallery'>
+					{currentValue && currentValue.url && !isSearchActive ? (
+						<div className='image-item' tabIndex='0' id='selected-image'>
+							<p>
+								{currentValue.alt_description || 'No description available'}
+							</p>
 							<img
-								src={image.urls.small}
-								alt={image.description || 'Image from Unsplash'}
-								onClick={() => setSelectedImage(image)}
+								src={currentValue.url}
+								alt={
+									currentValue.alt_description || 'No alt description available'
+								}
+								aria-labelledby='selected-image'
 							/>
 						</div>
-					))
-				)}
-			</div>
+					) : (
+						images.map((image) => (
+							<div
+								className='image-item'
+								key={image.id}
+								tabIndex='0'
+								role='button'
+								aria-label={`Select image: ${
+									image.alt_description || 'No description available'
+								}`}
+								onKeyDown={(e) => e.key === 'Enter' && setSelectedImage(image)}
+								onClick={() => setSelectedImage(image)}>
+								<p>{image.alt_description || 'No description available'}</p>
+								<img
+									src={image.urls.small}
+									alt={image.description || 'Image from Unsplash'}
+								/>
+							</div>
+						))
+					)}
+				</div>
+			</main>
 		</div>
 	);
 };
