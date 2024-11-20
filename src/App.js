@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSdk } from './useSdk';
-import axios from 'axios';
+import { fetchImages, searchImages } from './services/unsplashAPI';
 import './App.css';
-
-const UNSPLASH_API_URL = 'https://api.unsplash.com/photos/';
-const UNSPLASH_SEARCH_API_URL = 'https://api.unsplash.com/search/photos';
 
 const App = () => {
 	const { sdk, url, alt_description, apiKey } = useSdk(null);
@@ -14,36 +11,51 @@ const App = () => {
 	const [isSearchActive, setIsSearchActive] = useState(false);
 
 	useEffect(() => {
+		console.log('useEffect - sdk:', sdk, apiKey);
 		if (sdk && url) {
 			setCurrentValue({ url, alt_description });
 		}
-	}, [alt_description, sdk, url]);
+	}, [alt_description, apiKey, sdk, url]);
 
-	const fetchImages = async (url, searchQuery = '') => {
+	const loadImages = useCallback(async () => {
 		try {
-			const response = await axios.get(url, {
-				params: {
-					client_id: apiKey,
-					query: searchQuery,
-					per_page: 10,
-				},
-			});
-			setImages(searchQuery ? response.data.results : response.data);
-			setIsSearchActive(!!searchQuery);
+			const imageResults = await fetchImages(apiKey);
+			setImages(imageResults);
 		} catch (error) {
-			console.error('Error fetching images:', error);
+			console.error('Error loading images:', error);
+		}
+	}, [apiKey]);
+
+	const searchForImages = async () => {
+		console.log('searchForImage - apiKey, query', apiKey, query);
+		try {
+			const searchResults = await searchImages(apiKey, query);
+			console.log('searchResults:', searchResults);
+			setImages(searchResults);
+			setIsSearchActive(true);
+		} catch (error) {
+			console.error('Error searching for images:', error);
 		}
 	};
 
 	useEffect(() => {
 		if (!apiKey) return;
-		fetchImages(UNSPLASH_API_URL);
-	}, [apiKey]);
 
-	const setSelectedImage = async ({ urls, alt_description }) => {
+		const fetchData = async () => {
+			const results = await loadImages(apiKey);
+			console.log('useEffect - results:', results);
+			if (results) {
+				setImages(results);
+			}
+		};
+
+		fetchData();
+	}, [apiKey, loadImages]);
+
+	const setSelectedImage = async ({ urls: { full }, alt_description }) => {
 		try {
-			await sdk.field.setValue({ url: urls.full, alt_description });
-			setCurrentValue({ url: urls.full, alt_description });
+			await sdk.field.setValue({ url: full, alt_description });
+			setCurrentValue({ url: full, alt_description });
 			setIsSearchActive(false);
 			// Focus the selected image
 			document.getElementById('selected-image').focus();
@@ -54,14 +66,26 @@ const App = () => {
 
 	const handleSearch = (e) => {
 		e.preventDefault();
-		fetchImages(UNSPLASH_SEARCH_API_URL, query);
+		if (query) {
+			searchForImages();
+		} else {
+			loadImages(); // Reload default images if search query is cleared
+		}
 	};
 
 	const handleShowAllImages = () => {
 		setCurrentValue({ url: '', alt_description: '' });
 		setIsSearchActive(false);
 		setQuery('');
-		fetchImages(UNSPLASH_API_URL);
+		const fetchData = async () => {
+			const results = await loadImages(apiKey);
+			console.log('useEffect - results:', results);
+			if (results) {
+				setImages(results);
+			}
+		};
+
+		fetchData();
 	};
 
 	return (
@@ -96,9 +120,7 @@ const App = () => {
 			</header>
 
 			<main>
-				<section
-					className='image-container'
-					aria-label='Image Gallery'>
+				<section className='image-container' aria-label='Image Gallery'>
 					{currentValue && currentValue.url && !isSearchActive ? (
 						<article className='image-item' tabIndex='0' id='selected-image'>
 							<p>
