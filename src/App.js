@@ -96,12 +96,11 @@ const App = () => {
 			</header>
 
 			<main>
-				<div
+				<section
 					className='image-container'
-					role='region'
 					aria-label='Image Gallery'>
 					{currentValue && currentValue.url && !isSearchActive ? (
-						<div className='image-item' tabIndex='0' id='selected-image'>
+						<article className='image-item' tabIndex='0' id='selected-image'>
 							<p>
 								{currentValue.alt_description || 'No description available'}
 							</p>
@@ -112,10 +111,10 @@ const App = () => {
 								}
 								aria-labelledby='selected-image'
 							/>
-						</div>
+						</article>
 					) : (
 						images.map((image) => (
-							<div
+							<article
 								className='image-item'
 								key={image.id}
 								tabIndex='0'
@@ -130,10 +129,10 @@ const App = () => {
 									src={image.urls.small}
 									alt={image.description || 'Image from Unsplash'}
 								/>
-							</div>
+							</article>
 						))
 					)}
-				</div>
+				</section>
 			</main>
 		</div>
 	);
