@@ -15,7 +15,7 @@ A search input field is provided which allows the user to search images using sp
 
 # Deployment
 
-After you fork the project you must deploy the app to a hosting provider such as Netlify, Vercel, ect.  Keep in mind that the app performs only as expected only when used within the context of an Amplience extension and requires a valid Unsplash API Key. 
+After you fork the project you must deploy the app to a hosting provider such as Netlify, Vercel, ect.  Keep in mind that the app performs only as expected only when deployed with Amplience as an extension and requires a valid Unsplash API Key. 
 
 
 # Installation
@@ -30,7 +30,15 @@ Once the app has been deployed you will perform the following:
 
 Review the [official documentation for registering a new extension](https://amplience.com/developers/docs/integrations/extensions/register-use/)
 
-# Required Persmissions
+## Required Persmissions
 
 Assign the following permissions:
 
+
+![permissions](assets/permissions.png)
+
+## Installation Parameters
+
+Add your Unsplash API key to the **Installation Parameters**. 
+
+![installation parameters](assets/install-params.png)
