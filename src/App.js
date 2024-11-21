@@ -9,47 +9,48 @@ const App = () => {
 	const [currentValue, setCurrentValue] = useState(null);
 	const [query, setQuery] = useState('');
 	const [isSearchActive, setIsSearchActive] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
-		console.log('useEffect - sdk:', sdk, apiKey);
 		if (sdk && url) {
 			setCurrentValue({ url, alt_description });
 		}
-	}, [alt_description, apiKey, sdk, url]);
+	}, [sdk, url, alt_description]);
 
 	const loadImages = useCallback(async () => {
+		setIsLoading(true);
+		setError(null);
 		try {
 			const imageResults = await fetchImages(apiKey);
 			setImages(imageResults);
 		} catch (error) {
 			console.error('Error loading images:', error);
+			setError('Failed to load images. Please try again.');
+		} finally {
+			setIsLoading(false);
 		}
 	}, [apiKey]);
 
 	const searchForImages = async () => {
-		console.log('searchForImage - apiKey, query', apiKey, query);
+		setIsLoading(true);
+		setError(null);
 		try {
 			const searchResults = await searchImages(apiKey, query);
-			console.log('searchResults:', searchResults);
 			setImages(searchResults);
 			setIsSearchActive(true);
 		} catch (error) {
 			console.error('Error searching for images:', error);
+			setError('Failed to search images. Please try again.');
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		if (!apiKey) return;
-
-		const fetchData = async () => {
-			const results = await loadImages(apiKey);
-			console.log('useEffect - results:', results);
-			if (results) {
-				setImages(results);
-			}
-		};
-
-		fetchData();
+		if (apiKey) {
+			loadImages();
+		}
 	}, [apiKey, loadImages]);
 
 	const setSelectedImage = async ({ urls: { full }, alt_description }) => {
@@ -57,10 +58,10 @@ const App = () => {
 			await sdk.field.setValue({ url: full, alt_description });
 			setCurrentValue({ url: full, alt_description });
 			setIsSearchActive(false);
-			// Focus the selected image
 			document.getElementById('selected-image').focus();
 		} catch (err) {
-			console.log(err);
+			console.error('Error setting selected image:', err);
+			setError('Failed to select image. Please try again.');
 		}
 	};
 
@@ -69,7 +70,7 @@ const App = () => {
 		if (query) {
 			searchForImages();
 		} else {
-			loadImages(); // Reload default images if search query is cleared
+			loadImages();
 		}
 	};
 
@@ -77,15 +78,7 @@ const App = () => {
 		setCurrentValue({ url: '', alt_description: '' });
 		setIsSearchActive(false);
 		setQuery('');
-		const fetchData = async () => {
-			const results = await loadImages(apiKey);
-			console.log('useEffect - results:', results);
-			if (results) {
-				setImages(results);
-			}
-		};
-
-		fetchData();
+		loadImages();
 	};
 
 	return (
@@ -95,21 +88,21 @@ const App = () => {
 				<form onSubmit={handleSearch} aria-label='Search Unsplash Images'>
 					<input
 						id='search-input'
-						aria-label='Search Unsplash Images'
 						type='text'
 						placeholder='Search for images...'
 						value={query}
 						onChange={(e) => setQuery(e.target.value)}
+						aria-label='Search Unsplash Images'
 					/>
 					<button
-						className='ampx-button ampx-button__primary'
 						type='submit'
+						className='ampx-button ampx-button__primary'
 						aria-label='Search'>
 						Search
 					</button>
 				</form>
 
-				{currentValue && currentValue.url && (
+				{currentValue?.url && (
 					<button
 						className='ampx-button ampx-button__primary'
 						onClick={handleShowAllImages}
@@ -120,17 +113,18 @@ const App = () => {
 			</header>
 
 			<main>
+				{isLoading && <p>Loading images...</p>}
+				{error && <p className='error'>{error}</p>}
+
 				<section className='image-container' aria-label='Image Gallery'>
-					{currentValue && currentValue.url && !isSearchActive ? (
+					{!isLoading && currentValue?.url && !isSearchActive ? (
 						<article className='image-item' tabIndex='0' id='selected-image'>
 							<p>
 								{currentValue.alt_description || 'No description available'}
 							</p>
 							<img
 								src={currentValue.url}
-								alt={
-									currentValue.alt_description || 'No alt description available'
-								}
+								alt={currentValue.alt_description || 'Selected Unsplash image'}
 								aria-labelledby='selected-image'
 							/>
 						</article>
