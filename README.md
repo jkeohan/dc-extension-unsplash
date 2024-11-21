@@ -1,44 +1,47 @@
 # dc-extension-unsplash-demo
 
-The app makes use of the [dc-extensions-sdk](https://github.com/amplience/dc-extensions-sdk) which enables the creation of Extensions for Dynamic Content. Extensions are custom form controls that can be used in the content editing form in the Dynamic Content App.
+This project demonstrates the use of the [dc-extensions-sdk](https://github.com/amplience/dc-extensions-sdk), enabling the creation of custom extensions for Dynamic Content. Extensions are custom form controls used within the content editing interface of the Dynamic Content platform.
 
-This extension is a simple React app that leverages the [Unsplash API](https://unsplash.com/documentation#getting-started) to render images within an Amplience Content Item.  The user then has the ability to select an image and save its corresponding url and alt text values.  
+This extension is a React application that integrates with the [Unsplash API](https://unsplash.com/documentation#getting-started) to display images within an Amplience Content Item. Users can select an image and save its associated URL and alt text values.
 
-A search input field is provided which allows the user to search images using specific keywords. 
+Additionally, the extension includes a search functionality that allows users to find images based on specific keywords.
 
 ## Features
 
-* Retrieves a set of images from Unsplash API
-* Allows user to select an image and save its corresponding url and alt text values
-* Allows the user to search for images based on keywords
-* Updates url and alt text values when a new image has been saved
+- Fetches a set of random images from the Unsplash API.
+- Allows users to select an image and save its associated URL and alt text.
+- Provides a search functionality for finding images based on keywords.
+- Automatically updates URL and alt text values when a new image is selected.
 
-# Deployment
+## Deployment
 
-After you fork the project you must deploy the app to a hosting provider such as Netlify, Vercel, ect.  Keep in mind that the app performs only as expected only when deployed with Amplience as an extension and requires a valid Unsplash API Key. 
+To use this extension, you must first fork this repository and deploy the application to a hosting provider such as Netlify, Vercel, or a similar platform. 
 
+**Important:** The extension is designed to work specifically within Amplience as an integrated extension and requires a valid Unsplash API Key for functionality.
 
-# Installation
+## Installation
 
-Once the app has been deployed you will perform the following:
+After deploying the application, follow these steps to integrate it with Amplience:
 
-1. Create a and configure a new extension
-2. Create a Content Type that uses the extension
-3. Create a Content Item based on this Content Type.
+1. **Create and Configure a New Extension**  
+   Register the app as an extension in the Amplience platform.
 
-# Register and use the extension
+2. **Create a Content Type**  
+   Define a Content Type that incorporates the newly created extension.
 
-Review the [official documentation for registering a new extension](https://amplience.com/developers/docs/integrations/extensions/register-use/)
+3. **Create a Content Item**  
+   Build a Content Item using the Content Type configured in the previous step.
 
-## Required Persmissions
+For detailed instructions on registering and using a new extension, refer to the [Amplience documentation](https://amplience.com/developers/docs/integrations/extensions/register-use/).
 
-Assign the following permissions:
+## Required Permissions
 
+Assign the following permissions to ensure the extension functions correctly:
 
 ![permissions](assets/permissions.png)
 
 ## Installation Parameters
 
-Add your Unsplash API key to the **Installation Parameters**. 
+When registering the extension, add your Unsplash API key to the Installation Parameters to enable API access. 
 
 ![installation parameters](assets/install-params.png)
