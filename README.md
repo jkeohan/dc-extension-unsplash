@@ -26,15 +26,24 @@ After deploying the application, follow these steps to integrate it with Amplien
 1. **Create and Configure a New Extension**  
    Register the app as an extension in the Amplience platform.
 
-2. **Create a Content Type**  
+2. **Create a new Schema**
+   Create a new schema that uses the extension
+
+3. **Create a Content Type**  
    Define a Content Type that incorporates the newly created extension.
 
-3. **Create a Content Item**  
+4. **Create a Content Item**  
    Build a Content Item using the Content Type configured in the previous step.
 
 For detailed instructions on registering and using a new extension, refer to the [Amplience documentation](https://amplience.com/developers/docs/integrations/extensions/register-use/).
 
-## Required Permissions
+## Create and Configure a New Extension
+
+### Setup
+
+![Extension Setup](assets/setup.png)
+
+### Required Permissions
 
 Assign the following permissions to ensure the extension functions correctly:
 
@@ -44,4 +53,54 @@ Assign the following permissions to ensure the extension functions correctly:
 
 When registering the extension, add your Unsplash API key to the Installation Parameters to enable API access. 
 
-![installation parameters](assets/install-params.png)
+```{
+  "api_key": "YOUR API KEY",
+}
+```
+
+## Create a new Schema and Content Type
+Follow the instruction here to [Creating a Content Type](https://amplience.com/developers/docs/start/model/#creating-the-content-type) and use the following code when creating the new schema. 
+
+```
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://joe-demo.com/unsplash-demo/",
+
+
+    "title": "Title",
+    "description": "Description",
+
+
+    "allOf": [
+        {
+            "$ref": "http://bigcontent.io/cms/schema/v1/core#/definitions/content"
+        }
+    ],
+    
+    "type": "object",
+    "properties": {
+        "image": {
+            "title": "Unsplash Image",
+            "type": "object",
+            "properties": {
+                "url": {
+                    "title": "URL",
+                    "description": "URL for the image",
+                    "type": "string"
+                },
+                "alt_description": {
+                    "title": "Description",
+                    "description": "Id (the image name)",
+                    "type": "string"
+                }
+            },
+            "ui:extension": {
+                "name": "unsplash-demo"
+            },
+            "propertyOrder": []
+        }
+        
+    },
+    "propertyOrder": []
+}
+```
